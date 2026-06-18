@@ -9,7 +9,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet"/>
 <!-- Google Identity Services -->
 <script src="https://accounts.google.com/gsi/client" defer></script>
-<script src="https://apis.google.com/js/api.js" defer></script>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -907,12 +906,6 @@
             <p style="font-size:0.78rem; margin-top:0.25rem; color:var(--text-muted)">Images, videos, PDFs, and more</p>
             <input type="file" id="file-input" multiple accept="image/*,video/*,.pdf,.doc,.docx" onchange="handleFiles(this)" />
           </div>
-          <button type="button" onclick="openDrivePicker()" style="margin-top:0.65rem; width:100%; padding:0.65rem 1rem; border-radius:12px; border:1.5px solid var(--border); background:white; font-family:'Lato',sans-serif; font-size:0.88rem; font-weight:700; color:var(--text-secondary); cursor:pointer; display:flex; align-items:center; justify-content:center; gap:0.5rem; transition:all 0.2s;"
-            onmouseover="this.style.borderColor='var(--blue-300)';this.style.color='var(--blue-500)';this.style.background='var(--blue-50)'"
-            onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-secondary)';this.style.background='white'">
-            <svg width="16" height="16" viewBox="0 0 87.3 78" xmlns="http://www.w3.org/2000/svg"><path d="m6.6 66.85 3.85 6.65c.8 1.4 1.95 2.5 3.3 3.3l13.75-23.8h-27.5c0 1.55.4 3.1 1.2 4.5z" fill="#0066da"/><path d="m43.65 25-13.75-23.8c-1.35.8-2.5 1.9-3.3 3.3l-25.4 44a9.06 9.06 0 0 0 -1.2 4.5h27.5z" fill="#00ac47"/><path d="m73.55 76.8c1.35-.8 2.5-1.9 3.3-3.3l1.6-2.75 7.65-13.25c.8-1.4 1.2-2.95 1.2-4.5h-27.502l5.852 11.5z" fill="#ea4335"/><path d="m43.65 25 13.75-23.8c-1.35-.8-2.9-1.2-4.5-1.2h-18.5c-1.6 0-3.15.45-4.5 1.2z" fill="#00832d"/><path d="m59.8 53h-32.3l-13.75 23.8c1.35.8 2.9 1.2 4.5 1.2h50.8c1.6 0 3.15-.45 4.5-1.2z" fill="#2684fc"/><path d="m73.4 26.5-12.7-22c-.8-1.4-1.95-2.5-3.3-3.3l-13.75 23.8 16.15 28h27.45c0-1.55-.4-3.1-1.2-4.5z" fill="#ffba00"/></svg>
-            Upload from Google Drive
-          </button>
           <div class="media-preview" id="media-preview"></div>
         </div>
       </div>
@@ -1899,65 +1892,6 @@ function showToast(msg) {
   setTimeout(() => t.classList.remove('show'), 2800);
 }
 
-// ============================================================
-// GOOGLE DRIVE PICKER
-// ============================================================
-
-let _pickerApiLoaded = false;
-
-function loadPickerApi() {
-  return new Promise(resolve => {
-    if (_pickerApiLoaded) { resolve(); return; }
-    gapi.load('picker', () => { _pickerApiLoaded = true; resolve(); });
-  });
-}
-
-async function openDrivePicker() {
-  let token;
-  try {
-    token = await getToken(false);
-  } catch {
-    try { token = await getToken(true); } catch {
-      showToast('Please sign in with Google first 🔑');
-      showAuthBanner(true);
-      return;
-    }
-  }
-
-  await loadPickerApi();
-
-  const picker = new google.picker.PickerBuilder()
-    .addView(new google.picker.DocsView()
-      .setIncludeFolders(false)
-      .setMimeTypes('image/jpeg,image/png,image/gif,image/webp,video/mp4,video/quicktime,application/pdf'))
-    .addView(new google.picker.DocsView(google.picker.ViewId.DOCS_IMAGES_AND_VIDEOS))
-    .setOAuthToken(token)
-    .setDeveloperKey('AIzaSyCA--vE_wogLqg9cOIkFvsVDeTh_7cnqkY')
-    .setCallback(async (data) => {
-      if (data.action !== google.picker.Action.PICKED) return;
-      for (const doc of data.docs) {
-        showToast(`Downloading ${doc.name}…`);
-        try {
-          const resp = await fetch(`https://www.googleapis.com/drive/v3/files/${doc.id}?alt=media`, {
-            headers: { Authorization: `Bearer ${token}` }
-          });
-          if (!resp.ok) throw new Error('fetch failed');
-          const blob = await resp.blob();
-          const reader = new FileReader();
-          reader.onload = (e) => {
-            currentFiles.push({ name: doc.name, type: blob.type || doc.mimeType, data: e.target.result });
-            renderFilePreviews();
-          };
-          reader.readAsDataURL(blob);
-        } catch {
-          showToast(`Couldn't download ${doc.name}`);
-        }
-      }
-    })
-    .build();
-
-  picker.setVisible(true);
-}
 
 // ============================================================
 // BOOT
