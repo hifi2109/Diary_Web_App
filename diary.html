@@ -1,0 +1,1833 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Jesse's Diary</title>
+<link rel="icon" type="image/png" href="imgs/icon.png" />
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet"/>
+<!-- Google Identity Services -->
+<script src="https://accounts.google.com/gsi/client" defer></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --blue-50: #EAF4FB;
+    --blue-100: #C8E4F5;
+    --blue-200: #A2CFED;
+    --blue-300: #74B4E1;
+    --blue-400: #4A96CF;
+    --blue-500: #2978B5;
+    --blue-600: #1A5C8F;
+    --lavender: #E8E4F8;
+    --lavender-dark: #9B8EC4;
+    --mint: #E4F5EF;
+    --mint-dark: #5DB394;
+    --peach: #FDF0EA;
+    --peach-dark: #D4846A;
+    --cream: #FDFAF5;
+    --text-primary: #2C3E50;
+    --text-secondary: #6B7C93;
+    --text-muted: #A0AEC0;
+    --border: #D6E8F5;
+    --white: #FFFFFF;
+    --shadow: 0 2px 12px rgba(74,150,207,0.10);
+    --shadow-hover: 0 6px 24px rgba(74,150,207,0.18);
+  }
+
+  body {
+    font-family: 'Lato', sans-serif;
+    background: linear-gradient(135deg, #EAF4FB 0%, #F0EBF8 50%, #E8F5EF 100%);
+    min-height: 100vh;
+    color: var(--text-primary);
+  }
+
+  nav {
+    background: rgba(255,255,255,0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .nav-brand {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    color: var(--blue-500);
+    letter-spacing: 0.02em;
+  }
+  .nav-brand span { color: var(--lavender-dark); font-style: italic; }
+  .nav-tabs { display: flex; gap: 0.5rem; }
+  .nav-tab {
+    padding: 0.5rem 1.25rem;
+    border-radius: 99px;
+    border: 1.5px solid transparent;
+    background: transparent;
+    font-family: 'Lato', sans-serif;
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.03em;
+  }
+  .nav-tab:hover { background: var(--blue-50); color: var(--blue-500); }
+  .nav-tab.active { background: var(--blue-400); color: white; border-color: var(--blue-400); }
+
+  main { max-width: 860px; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; }
+
+  .page { display: none; }
+  .page.active { display: block; animation: fadeUp 0.35s ease; }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+
+  .page-header { margin-bottom: 2rem; }
+  .page-header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.25rem;
+  }
+  .page-header p { color: var(--text-secondary); font-size: 0.9rem; font-weight: 300; }
+
+  .entry-card {
+    background: white;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .entry-card-header {
+    background: linear-gradient(135deg, var(--blue-100), var(--lavender));
+    padding: 1.5rem 2rem 1.25rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .entry-card-header h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.25rem;
+    color: var(--blue-600);
+  }
+  .date-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: white;
+    color: var(--blue-500);
+    border-radius: 99px;
+    padding: 0.3rem 0.9rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+    margin-top: 0.5rem;
+    border: 1px solid var(--blue-200);
+  }
+
+  .form-body { padding: 2rem; }
+
+  .field { margin-bottom: 1.5rem; }
+  .field label {
+    display: block;
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+  }
+  .field input[type="text"],
+  .field input[type="date"],
+  .field textarea,
+  .field select {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    font-family: 'Lato', sans-serif;
+    font-size: 0.95rem;
+    color: var(--text-primary);
+    background: var(--blue-50);
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+  }
+  .field input:focus, .field textarea:focus, .field select:focus {
+    border-color: var(--blue-300);
+    box-shadow: 0 0 0 3px rgba(74,150,207,0.12);
+    background: white;
+  }
+  .field textarea { min-height: 160px; resize: vertical; line-height: 1.7; }
+
+  .mood-grid { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+  .mood-btn {
+    padding: 0.5rem 1rem;
+    border-radius: 99px;
+    border: 1.5px solid var(--border);
+    background: var(--blue-50);
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: var(--text-secondary);
+    font-family: 'Lato', sans-serif;
+    font-weight: 700;
+  }
+  .mood-btn:hover { border-color: var(--blue-300); background: var(--blue-100); color: var(--blue-500); }
+  .mood-btn.selected { background: var(--blue-400); color: white; border-color: var(--blue-400); }
+
+  .upload-area {
+    border: 2px dashed var(--blue-200);
+    border-radius: 16px;
+    padding: 2rem;
+    text-align: center;
+    background: var(--blue-50);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .upload-area:hover { border-color: var(--blue-400); background: var(--blue-100); }
+  .upload-icon { font-size: 2rem; margin-bottom: 0.5rem; }
+  .upload-area p { color: var(--text-secondary); font-size: 0.9rem; }
+  .upload-area span { color: var(--blue-400); font-weight: 700; }
+  .upload-area input[type="file"] { display: none; }
+
+  .media-preview { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 1rem; }
+  .media-thumb-wrap { display: flex; flex-direction: column; align-items: center; gap: 0.3rem; }
+  .media-thumb {
+    width: 80px; height: 80px;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 2px solid var(--border);
+    position: relative;
+    background: var(--blue-100);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .media-thumb img { width: 100%; height: 100%; object-fit: cover; }
+  .media-thumb .thumb-remove {
+    position: absolute; top: 3px; right: 3px;
+    background: rgba(0,0,0,0.45); color: white;
+    border: none; border-radius: 99px;
+    width: 20px; height: 20px;
+    font-size: 10px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 900;
+  }
+  .media-thumb .file-label {
+    font-size: 0.6rem; text-align: center; padding: 4px;
+    color: var(--blue-600); word-break: break-all;
+  }
+  .thumb-name {
+    width: 80px;
+    font-size: 0.62rem; color: var(--text-secondary);
+    text-align: center; word-break: break-all;
+    line-height: 1.3;
+    cursor: pointer;
+    border-bottom: 1px dashed transparent;
+    transition: border-color 0.15s, color 0.15s;
+  }
+  .thumb-name:hover { color: var(--blue-500); border-bottom-color: var(--blue-300); }
+  .thumb-name-input {
+    width: 80px;
+    font-size: 0.62rem; font-family: 'Lato', sans-serif;
+    border: 1.5px solid var(--blue-300);
+    border-radius: 6px; padding: 2px 4px;
+    text-align: center; outline: none;
+    color: var(--text-primary);
+    background: white;
+  }
+
+  .form-actions { display: flex; gap: 1rem; padding: 1.5rem 2rem; border-top: 1px solid var(--border); background: var(--cream); }
+  .btn {
+    padding: 0.75rem 2rem;
+    border-radius: 12px;
+    border: none;
+    font-family: 'Lato', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.02em;
+  }
+  .btn-primary { background: var(--blue-400); color: white; }
+  .btn-primary:hover { background: var(--blue-500); transform: translateY(-1px); box-shadow: 0 4px 14px rgba(74,150,207,0.3); }
+  .btn-primary:active { transform: translateY(0); }
+  .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+  .btn-secondary { background: white; color: var(--text-secondary); border: 1.5px solid var(--border); }
+  .btn-secondary:hover { background: var(--blue-50); border-color: var(--blue-300); color: var(--blue-500); }
+
+  .fab {
+    position: fixed;
+    bottom: 2rem; right: 2rem;
+    width: 56px; height: 56px;
+    border-radius: 99px;
+    background: var(--blue-400);
+    color: white;
+    border: none;
+    font-size: 1.75rem;
+    line-height: 1;
+    cursor: pointer;
+    box-shadow: 0 4px 20px rgba(74,150,207,0.4);
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+    z-index: 150;
+  }
+  .fab:hover { background: var(--blue-500); transform: scale(1.08); box-shadow: 0 6px 28px rgba(74,150,207,0.5); }
+  .fab:active { transform: scale(0.96); }
+
+  .toast {
+    position: fixed; bottom: 2rem; right: 2rem;
+    background: var(--mint-dark); color: white;
+    padding: 0.85rem 1.5rem;
+    border-radius: 12px;
+    font-size: 0.9rem; font-weight: 700;
+    opacity: 0; transform: translateY(20px);
+    transition: all 0.3s; pointer-events: none;
+    z-index: 999;
+  }
+  .toast.show { opacity: 1; transform: translateY(0); }
+
+  .entries-filters {
+    display: flex; gap: 0.5rem; flex-wrap: nowrap;
+    margin-bottom: 1.5rem; align-items: center;
+  }
+  .filter-scroll-wrapper { overflow: hidden; flex: 1; min-width: 0; }
+  .filter-scroll {
+    display: flex; gap: 0.75rem;
+    overflow-x: auto; scroll-behavior: smooth;
+    scrollbar-width: none;
+  }
+  .filter-scroll::-webkit-scrollbar { display: none; }
+  .filter-nav-btn {
+    flex-shrink: 0;
+    width: 30px; height: 30px;
+    border-radius: 99px;
+    border: 1.5px solid var(--border);
+    background: white;
+    font-size: 1rem; font-weight: 700;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: 'Lato', sans-serif;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .filter-nav-btn:hover { background: var(--blue-50); border-color: var(--blue-300); color: var(--blue-500); }
+  .filter-nav-btn:disabled { opacity: 0.3; cursor: default; pointer-events: none; }
+  .view-toggle { display: flex; gap: 0.35rem; margin-left: auto; }
+  .view-btn {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    border: 1.5px solid var(--border);
+    background: white;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: 1rem;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+    font-family: 'Lato', sans-serif;
+  }
+  .view-btn:hover { background: var(--blue-50); border-color: var(--blue-300); color: var(--blue-500); }
+  .view-btn.active { background: var(--blue-400); color: white; border-color: var(--blue-400); }
+
+  .entries-list.card-view .month-group {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+  .entries-list.card-view .month-label { grid-column: 1 / -1; }
+  .entries-list.card-view .entry-item { display: flex; flex-direction: column; }
+  .entries-list.card-view .entry-item-body { flex: 1; }
+  .entries-list.card-view .entry-item-footer { margin-top: auto; }
+  .filter-label {
+    font-size: 0.78rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--text-muted);
+  }
+  .filter-btn {
+    padding: 0.35rem 1rem;
+    border-radius: 99px;
+    border: 1.5px solid var(--border);
+    background: white;
+    font-size: 0.8rem; font-weight: 700;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: 'Lato', sans-serif;
+  }
+  .filter-btn:hover, .filter-btn.active { background: var(--blue-100); border-color: var(--blue-300); color: var(--blue-500); }
+
+  .entries-list { display: flex; flex-direction: column; gap: 1.25rem; }
+  .empty-state {
+    text-align: center; padding: 4rem 2rem;
+    color: var(--text-muted);
+  }
+  .empty-state .empty-icon { font-size: 3rem; margin-bottom: 1rem; }
+  .empty-state h3 { font-family: 'Playfair Display', serif; font-size: 1.25rem; color: var(--text-secondary); margin-bottom: 0.5rem; }
+  .empty-state p { font-size: 0.9rem; }
+  .empty-state button { margin-top: 1.25rem; }
+
+  .entry-item {
+    background: white;
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    transition: box-shadow 0.2s, transform 0.2s;
+  }
+  .entry-item:hover { box-shadow: var(--shadow-hover); transform: translateY(-2px); }
+  .entry-item-header {
+    padding: 1.25rem 1.5rem 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    border-bottom: 1px solid var(--border);
+  }
+  .entry-item-meta { flex: 1; }
+  .entry-item-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.15rem;
+    color: var(--text-primary);
+    margin-bottom: 0.3rem;
+  }
+  .entry-item-date {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    font-weight: 700;
+    letter-spacing: 0.04em;
+  }
+  .entry-item-mood {
+    background: var(--blue-50);
+    color: var(--blue-500);
+    border: 1px solid var(--blue-200);
+    border-radius: 99px;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  .entry-item-body { padding: 1rem 1.5rem; }
+  .entry-item-text {
+    font-size: 0.9rem;
+    line-height: 1.7;
+    color: var(--text-secondary);
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .entry-media-row { display: flex; gap: 0.5rem; margin-top: 0.75rem; flex-wrap: wrap; align-items: center; }
+  .entry-media-thumb {
+    width: 56px; height: 56px;
+    border-radius: 8px; overflow: hidden;
+    border: 1.5px solid var(--border);
+    background: var(--blue-100);
+    flex-shrink: 0; cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .entry-media-thumb:hover { transform: scale(1.06); box-shadow: var(--shadow-hover); }
+  .entry-media-thumb img, .entry-media-thumb video { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .entry-media-thumb-video { position: relative; }
+  .entry-thumb-play {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(0,0,0,0.3); color: white;
+    font-size: 0.8rem; pointer-events: none;
+  }
+  .entry-media-chip {
+    display: inline-flex; align-items: center; gap: 0.3rem;
+    background: var(--mint);
+    color: var(--mint-dark);
+    border-radius: 99px;
+    padding: 0.2rem 0.65rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    border: 1px solid var(--mint-dark);
+  }
+  .entry-item-footer {
+    padding: 0.75rem 1.5rem;
+    border-top: 1px solid var(--border);
+    display: flex; gap: 0.5rem; justify-content: flex-end;
+    background: var(--cream);
+  }
+  .btn-sm {
+    padding: 0.4rem 1rem;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: 'Lato', sans-serif;
+    border: 1.5px solid var(--border);
+    background: white;
+    color: var(--text-secondary);
+    transition: all 0.2s;
+  }
+  .btn-sm:hover { background: var(--blue-50); border-color: var(--blue-300); color: var(--blue-500); }
+  .btn-sm.danger:hover { background: #FEE; border-color: #F5ACAC; color: #C0392B; }
+
+  .modal-backdrop {
+    display: none; position: fixed; inset: 0;
+    background: rgba(44,62,80,0.35);
+    z-index: 200; align-items: center; justify-content: center;
+    backdrop-filter: blur(4px);
+  }
+  .modal-backdrop.open { display: flex; animation: fadeIn 0.2s ease; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  .modal {
+    background: white;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    box-shadow: 0 20px 60px rgba(44,62,80,0.20);
+    max-width: 680px; width: 90%; max-height: 88vh;
+    overflow-y: auto;
+    animation: slideUp 0.25s ease;
+  }
+  @keyframes slideUp { from { transform: translateY(24px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+  .modal-header {
+    padding: 1.5rem 2rem 1.25rem;
+    border-bottom: 1px solid var(--border);
+    background: linear-gradient(135deg, var(--blue-100), var(--lavender));
+    display: flex; justify-content: space-between; align-items: flex-start;
+  }
+  .modal-header h2 { font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--blue-600); }
+  .modal-close {
+    background: none; border: none; font-size: 1.3rem; cursor: pointer;
+    color: var(--text-muted); transition: color 0.2s;
+    line-height: 1; padding: 0.2rem;
+  }
+  .modal-close:hover { color: var(--text-primary); }
+  .modal-body { padding: 2rem; }
+  .modal-section { margin-bottom: 1.5rem; }
+  .modal-section-label {
+    font-size: 0.72rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--text-muted); margin-bottom: 0.5rem;
+  }
+  .modal-text { font-size: 0.95rem; line-height: 1.8; color: var(--text-secondary); }
+  .modal-media-grid { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+  .modal-media-item {
+    width: 120px; height: 120px;
+    border-radius: 12px; overflow: hidden;
+    border: 1.5px solid var(--border);
+    background: var(--blue-50);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; position: relative;
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .modal-media-item:hover { transform: scale(1.04); box-shadow: var(--shadow-hover); }
+  .modal-media-item img { width: 100%; height: 100%; object-fit: cover; }
+  .modal-media-item video { width: 100%; height: 100%; object-fit: cover; }
+  .modal-media-item .play-badge {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(0,0,0,0.28);
+    font-size: 2rem; pointer-events: none;
+  }
+  .modal-media-item .file-name {
+    font-size: 0.65rem; text-align: center; padding: 6px;
+    color: var(--blue-600); word-break: break-all; font-weight: 700;
+  }
+
+  /* Lightbox */
+  .lightbox {
+    display: none; position: fixed; inset: 0; z-index: 500;
+    background: rgba(0,0,0,0.92);
+    align-items: center; justify-content: center;
+    flex-direction: column;
+  }
+  .lightbox.open { display: flex; animation: fadeIn 0.2s ease; }
+  .lightbox-media {
+    max-width: 92vw; max-height: 85vh;
+    border-radius: 8px; object-fit: contain;
+    box-shadow: 0 8px 48px rgba(0,0,0,0.6);
+  }
+  .lightbox-media video { max-width: 92vw; max-height: 85vh; border-radius: 8px; outline: none; }
+  .lightbox-close {
+    position: fixed; top: 1.25rem; right: 1.5rem;
+    background: rgba(255,255,255,0.15); border: none; color: white;
+    font-size: 1.5rem; width: 40px; height: 40px; border-radius: 99px;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    transition: background 0.2s;
+  }
+  .lightbox-close:hover { background: rgba(255,255,255,0.28); }
+  .lightbox-nav {
+    position: fixed; top: 50%; transform: translateY(-50%);
+    background: rgba(255,255,255,0.15); border: none; color: white;
+    font-size: 1.4rem; width: 44px; height: 44px; border-radius: 99px;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    transition: background 0.2s;
+  }
+  .lightbox-nav:hover { background: rgba(255,255,255,0.28); }
+  .lightbox-nav.prev { left: 1.25rem; }
+  .lightbox-nav.next { right: 1.25rem; }
+  .lightbox-nav.hidden { display: none; }
+  .lightbox-caption {
+    color: rgba(255,255,255,0.6); font-size: 0.8rem;
+    margin-top: 0.85rem; font-family: 'Lato', sans-serif;
+  }
+  .lightbox-loading {
+    color: rgba(255,255,255,0.5); font-size: 1rem;
+    font-family: 'Lato', sans-serif;
+    min-width: 200px; min-height: 200px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .modal-footer {
+    padding: 1.25rem 2rem;
+    border-top: 1px solid var(--border);
+    display: flex; justify-content: flex-end;
+    background: var(--cream);
+  }
+
+  /* Media gallery */
+  .media-gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 0.85rem;
+  }
+  .gallery-item {
+    border-radius: 14px; overflow: hidden;
+    position: relative; aspect-ratio: 1;
+    cursor: pointer; background: var(--blue-100);
+    border: 1.5px solid var(--border);
+    box-shadow: var(--shadow);
+    transition: transform 0.18s, box-shadow 0.18s;
+  }
+  .gallery-item:hover { transform: scale(1.03); box-shadow: var(--shadow-hover); }
+  .gallery-item img, .gallery-item video { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .gallery-item .gallery-video-badge {
+    position: absolute; top: 8px; left: 8px;
+    background: rgba(0,0,0,0.5); color: white;
+    border-radius: 99px; padding: 2px 8px;
+    font-size: 0.72rem; font-weight: 700;
+  }
+  .gallery-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 55%);
+    opacity: 0; transition: opacity 0.2s;
+    display: flex; flex-direction: column; justify-content: flex-end;
+    padding: 0.6rem;
+  }
+  .gallery-item:hover .gallery-overlay { opacity: 1; }
+  .gallery-entry-link {
+    color: white; font-size: 0.7rem; font-weight: 700;
+    font-family: 'Lato', sans-serif;
+    text-decoration: underline; cursor: pointer;
+    background: none; border: none; padding: 0;
+    text-align: left; line-height: 1.3;
+  }
+  .gallery-entry-date { color: rgba(255,255,255,0.7); font-size: 0.65rem; margin-top: 1px; }
+  .gallery-empty { text-align: center; padding: 4rem 2rem; color: var(--text-muted); }
+  .gallery-empty .empty-icon { font-size: 3rem; margin-bottom: 1rem; }
+  .gallery-empty h3 { font-family: 'Playfair Display', serif; font-size: 1.25rem; color: var(--text-secondary); margin-bottom: 0.5rem; }
+
+  .year-group { margin-bottom: 2rem; }
+  .year-label {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--blue-400);
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--blue-100);
+  }
+  .month-group { margin-bottom: 1rem; }
+  .month-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+    margin-bottom: 0.6rem;
+  }
+
+
+  .stats-bar {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;
+    margin-bottom: 2rem;
+  }
+  .stat-card {
+    background: white;
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    padding: 1rem 1.25rem;
+    text-align: center;
+    box-shadow: var(--shadow);
+  }
+  .stat-card .stat-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    color: var(--blue-400);
+    font-weight: 600;
+    line-height: 1.2;
+  }
+  .stat-card .stat-label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-top: 0.2rem;
+  }
+  @keyframes statPop {
+    from { opacity: 0; transform: translateY(6px) scale(0.85); }
+    to   { opacity: 1; transform: translateY(0)   scale(1); }
+  }
+  .stat-num.animating { animation: statPop 1.2s cubic-bezier(0.34,1.56,0.64,1) 1s both; }
+
+  /* Message page */
+  .message-page {
+    max-width: 620px;
+    margin: 0 auto;
+    padding: 2rem 0 6rem;
+  }
+  .message-para {
+    opacity: 0;
+    transform: translateY(28px);
+    transition: opacity 0.75s ease, transform 0.75s ease;
+    margin-bottom: 2.2rem;
+    will-change: opacity, transform;
+  }
+  .message-para.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .message-para p {
+    font-family: 'Lato', sans-serif;
+    font-size: 1.05rem;
+    line-height: 1.85;
+    color: var(--text-secondary);
+    font-weight: 300;
+  }
+  .message-para.greeting p {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+  .message-para.birthday p {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.25rem;
+    font-style: italic;
+    color: var(--blue-500);
+  }
+  .message-para.sign-off p {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-brand">A <span>Diary</span> for <span>Jesse</span>✦</div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" id="tab-entries" onclick="showPage('entries', this)">Past Entries</button>
+    <button class="nav-tab" id="tab-media" onclick="showPage('media', this)">📷 Media</button>
+    <button id="tab-new" style="display:none"></button>
+    <button class="nav-tab" id="tab-message" onclick="showPage('message', this)">Message</button>
+  </div>
+</nav>
+
+<main>
+  <!-- ENTRIES PAGE -->
+  <div class="page active" id="page-entries">
+    <div class="page-header">
+      <h1>Past entries</h1>
+      <p>Your memories, beautifully preserved.</p>
+    </div>
+
+    <!-- Google Drive sign-in banner (shown when not authenticated) -->
+    <div id="drive-banner" style="display:none; background:var(--peach); border:1.5px solid var(--peach-dark); border-radius:16px; padding:1rem 1.5rem; margin-bottom:1.5rem; align-items:center; gap:1rem; flex-wrap:wrap;">
+      <div style="flex:1; min-width:180px;">
+        <div style="font-weight:700; color:var(--peach-dark); font-size:0.95rem;">Sign in to load your diary</div>
+        <div style="font-size:0.82rem; color:var(--text-secondary); margin-top:0.2rem;">Your entries are saved privately to your Google Drive.</div>
+      </div>
+      <button class="btn btn-primary" style="background:var(--peach-dark); flex-shrink:0;" onclick="signIn()">🔑 Sign in with Google</button>
+    </div>
+
+    <div class="stats-bar">
+      <div class="stat-card"><div class="stat-num" id="stat-total">—</div><div class="stat-label">Entries</div></div>
+      <div class="stat-card"><div class="stat-num" id="stat-streak">—</div><div class="stat-label">Day streak</div></div>
+      <div class="stat-card"><div class="stat-num" id="stat-media">—</div><div class="stat-label">Media files</div></div>
+    </div>
+    <div class="entries-filters">
+      <span class="filter-label">Filter:</span>
+      <button class="filter-nav-btn" id="filter-prev" onclick="scrollFilters(-1)" disabled>‹</button>
+      <div class="filter-scroll-wrapper">
+        <div class="filter-scroll" id="filter-scroll" onscroll="updateFilterNav()">
+          <button class="filter-btn active" onclick="filterEntries('all', this)">All</button>
+          <button class="filter-btn" onclick="filterEntries('🌸 Happy', this)">🌸 Happy</button>
+          <button class="filter-btn" onclick="filterEntries('✨ Excited', this)">✨ Excited</button>
+          <button class="filter-btn" onclick="filterEntries('🌿 Grateful', this)">🌿 Grateful</button>
+          <button class="filter-btn" onclick="filterEntries('🔥 Motivated', this)">🔥 Motivated</button>
+          <button class="filter-btn" onclick="filterEntries('🌊 Calm', this)">🌊 Calm</button>
+          <button class="filter-btn" onclick="filterEntries('🌙 Tired', this)">🌙 Tired</button>
+          <button class="filter-btn" onclick="filterEntries('🌩️ Anxious', this)">🌩️ Anxious</button>
+          <button class="filter-btn" onclick="filterEntries('🌧️ Sad', this)">🌧️ Sad</button>
+        </div>
+      </div>
+      <button class="filter-nav-btn" id="filter-next" onclick="scrollFilters(1)">›</button>
+      <div class="view-toggle">
+        <button class="view-btn" id="view-row" onclick="setView('row', this)" title="Row view">☰</button>
+        <button class="view-btn active" id="view-card" onclick="setView('card', this)" title="Card view">⊞</button>
+      </div>
+    </div>
+    <div class="entries-list" id="entries-list"></div>
+  </div>
+
+  <!-- MEDIA PAGE -->
+  <div class="page" id="page-media">
+    <div class="page-header">
+      <h1>Media</h1>
+      <p>All your photos and videos, sorted by date. Click an entry name to open it.</p>
+    </div>
+    <div id="media-gallery-grid"></div>
+  </div>
+
+  <!-- MESSAGE PAGE -->
+  <div class="page" id="page-message">
+    <div class="message-page" id="message-content">
+      <div class="message-para greeting"><p>Hey Jesse,</p></div>
+      <div class="message-para birthday"><p>Happy 24th Birthday :)</p></div>
+      <div class="message-para"><p>You've mentioned that you forget things easily and wish you could cherish the present more. That's what inspired me to make this diary for you. I wanted to give you a private place to keep the memories that make up your life, so that even when time passes, you'll always have something to look back on.</p></div>
+      <div class="message-para"><p>I hope this web diary becomes something meaningful to you and that it helps you hold onto the memories you'd never want to lose. I really hope you like it. And if you'd like anything changed, you know exactly who to reach out to :D</p></div>
+      <div class="message-para"><p>I'm not sure if you've ever noticed this about yourself, but you always seem to shine the brightest when you're doing something you genuinely love. Whether it's spending time with people you care about, pursuing your interests, or simply enjoying the things that make you happy, there's a spark in your eyes that's impossible to miss. I think that's one of the many reasons people are so naturally drawn to you, and I hope that part of you would never change.</p></div>
+      <div class="message-para"><p>Life isn't always easy, and there will be days when your thoughts feel loud, your emotions feel heavy, and everything seems harder than it should be. When those days come, I hope you'll remember that you don't have to carry everything on your own. No matter what happens, I'll always be there for you. No matter what.</p></div>
+      <div class="message-para"><p>Happy Birthday, Jesse 🩵</p></div>
+      <div class="message-para sign-off"><p>From your forever friend,</p></div>
+      <div class="message-para sign-off"><p>Isaac</p></div>
+    </div>
+  </div>
+
+  <!-- NEW ENTRY PAGE -->
+  <div class="page" id="page-new">
+    <div class="page-header">
+      <h1>Write a new entry</h1>
+      <p>How is your day going? Pour it all out.</p>
+    </div>
+    <div class="entry-card">
+      <div class="entry-card-header">
+        <h2>Today's Entry</h2>
+        <div class="date-badge">📅 <span id="today-date"></span></div>
+      </div>
+      <div class="form-body">
+        <div class="field">
+          <label>Title</label>
+          <input type="text" id="entry-title" placeholder="Give this entry a title..." />
+        </div>
+        <div class="field">
+          <label>Date</label>
+          <input type="date" id="entry-date" onchange="updateEntryCardHeader()" />
+        </div>
+        <div class="field">
+          <label>How are you feeling?</label>
+          <div class="mood-grid">
+            <button class="mood-btn" onclick="selectMood(this, '🌸 Happy')">🌸 Happy</button>
+            <button class="mood-btn" onclick="selectMood(this, '🌊 Calm')">🌊 Calm</button>
+            <button class="mood-btn" onclick="selectMood(this, '🌩️ Anxious')">🌩️ Anxious</button>
+            <button class="mood-btn" onclick="selectMood(this, '🌿 Grateful')">🌿 Grateful</button>
+            <button class="mood-btn" onclick="selectMood(this, '🌙 Tired')">🌙 Tired</button>
+            <button class="mood-btn" onclick="selectMood(this, '✨ Excited')">✨ Excited</button>
+            <button class="mood-btn" onclick="selectMood(this, '🌧️ Sad')">🌧️ Sad</button>
+            <button class="mood-btn" onclick="selectMood(this, '🔥 Motivated')">🔥 Motivated</button>
+          </div>
+        </div>
+        <div class="field">
+          <label>Your entry</label>
+          <textarea id="entry-text" placeholder="Write whatever is on your mind :D"></textarea>
+        </div>
+        <div class="field">
+          <label>Attach photos, videos or files</label>
+          <div class="upload-area" onclick="document.getElementById('file-input').click()">
+            <div class="upload-icon">🖼️</div>
+            <p><span>Click to upload</span> or drag and drop</p>
+            <p style="font-size:0.78rem; margin-top:0.25rem; color:var(--text-muted)">Images, videos, PDFs, and more</p>
+            <input type="file" id="file-input" multiple accept="image/*,video/*,.pdf,.doc,.docx" onchange="handleFiles(this)" />
+          </div>
+          <div class="media-preview" id="media-preview"></div>
+        </div>
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-primary" id="entry-save-btn" onclick="saveEntry()">💾 Save Entry</button>
+        <button class="btn btn-secondary" onclick="clearForm()">Clear</button>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- MODAL -->
+<div class="modal-backdrop" id="entry-modal" onclick="closeModal(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <h2 id="modal-title"></h2>
+        <div class="date-badge" style="margin-top:0.5rem">📅 <span id="modal-date"></span></div>
+      </div>
+      <button class="modal-close" onclick="closeModalDirect()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-section">
+        <div class="modal-section-label">Mood</div>
+        <div id="modal-mood" style="font-size:1rem; font-weight:700; color:var(--blue-500);"></div>
+      </div>
+      <div class="modal-section">
+        <div class="modal-section-label">Entry</div>
+        <div class="modal-text" id="modal-text"></div>
+      </div>
+      <div class="modal-section" id="modal-media-section">
+        <div class="modal-section-label">Media & Files</div>
+        <div class="modal-media-grid" id="modal-media-grid"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-primary" id="modal-edit-btn" onclick="editEntry(0)" style="margin-right:auto">✏️ Edit Entry</button>
+      <button class="btn btn-secondary" onclick="closeModalDirect()">Close</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<button class="fab" id="fab-new" onclick="showPage('new', document.getElementById('tab-new'))" title="New Entry">+</button>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox" onclick="closeLightboxOnBackdrop(event)">
+  <button class="lightbox-close" onclick="closeLightbox()">✕</button>
+  <button class="lightbox-nav prev" id="lb-prev" onclick="shiftLightbox(-1)">‹</button>
+  <div id="lb-content"></div>
+  <div class="lightbox-caption" id="lb-caption"></div>
+  <button class="lightbox-nav next" id="lb-next" onclick="shiftLightbox(1)">›</button>
+</div>
+
+<script>
+// ============================================================
+// CONFIGURATION — paste your Google OAuth Client ID below
+// ============================================================
+const CLIENT_ID = '760474937052-9uj6q8vselcipp5buqukpqluv7nq1j1o.apps.googleusercontent.com';
+const SCOPES = 'https://www.googleapis.com/auth/drive.appdata';
+const DRIVE_API = 'https://www.googleapis.com/drive/v3';
+const DRIVE_UPLOAD_API = 'https://www.googleapis.com/upload/drive/v3';
+
+// ============================================================
+// APP STATE
+// ============================================================
+let entries = [];
+let currentFiles = [];
+let selectedMood = '';
+let currentFilter = 'all';
+let currentView = 'card';
+let editingEntryId = null;
+
+const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+// Drive / Auth state
+let accessToken = null;
+let tokenExpiresAt = 0;
+let tokenClient = null;
+let entriesFileId = null;
+let _tokenCallbacks = [];
+let _tokenRequestPending = false;
+
+// driveFileId → objectUrl cache (avoids re-fetching the same file)
+const mediaCache = {};
+
+// ============================================================
+// GOOGLE AUTH
+// ============================================================
+
+function waitForGIS() {
+  return new Promise(resolve => {
+    if (window.google?.accounts?.oauth2) { resolve(); return; }
+    const id = setInterval(() => {
+      if (window.google?.accounts?.oauth2) { clearInterval(id); resolve(); }
+    }, 50);
+  });
+}
+
+function initGoogleAuth() {
+  tokenClient = google.accounts.oauth2.initTokenClient({
+    client_id: CLIENT_ID,
+    scope: SCOPES,
+    callback: _onTokenResponse,
+    error_callback: _onTokenError,
+  });
+  // Attempt silent sign-in on startup (no prompt shown to user)
+  getToken(false)
+    .then(() => initDrive())
+    .catch(() => showAuthBanner(true));
+}
+
+function _onTokenResponse(resp) {
+  _tokenRequestPending = false;
+  if (resp.error) {
+    const err = new Error(resp.error_description || resp.error);
+    _tokenCallbacks.forEach(cb => cb.reject(err));
+    _tokenCallbacks = [];
+    showAuthBanner(true);
+    return;
+  }
+  accessToken = resp.access_token;
+  // Subtract 60s so we refresh slightly before actual expiry
+  tokenExpiresAt = Date.now() + (resp.expires_in - 60) * 1000;
+  showAuthBanner(false);
+  _tokenCallbacks.forEach(cb => cb.resolve(accessToken));
+  _tokenCallbacks = [];
+}
+
+function _onTokenError(err) {
+  _tokenRequestPending = false;
+  const error = new Error(err.type || 'auth_error');
+  _tokenCallbacks.forEach(cb => cb.reject(error));
+  _tokenCallbacks = [];
+  showAuthBanner(true);
+}
+
+// Returns a Promise<string> that resolves to a valid access token.
+// Multiple concurrent callers all wait for the same underlying request.
+function getToken(interactive = false) {
+  if (accessToken && Date.now() < tokenExpiresAt) return Promise.resolve(accessToken);
+  return new Promise((resolve, reject) => {
+    _tokenCallbacks.push({ resolve, reject });
+    if (!_tokenRequestPending) {
+      _tokenRequestPending = true;
+      tokenClient.requestAccessToken({ prompt: interactive ? 'select_account' : '' });
+    }
+  });
+}
+
+function signIn() {
+  getToken(true).then(() => initDrive()).catch(() => {});
+}
+
+function showAuthBanner(show) {
+  document.getElementById('drive-banner').style.display = show ? 'flex' : 'none';
+}
+
+// ============================================================
+// DRIVE HELPERS
+// ============================================================
+
+async function driveGet(path) {
+  const token = await getToken(false);
+  const resp = await fetch(DRIVE_API + path, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+  if (resp.status === 401) {
+    // Token was silently expired; force refresh then retry once
+    accessToken = null;
+    const newToken = await getToken(true);
+    return fetch(DRIVE_API + path, { headers: { Authorization: `Bearer ${newToken}` } });
+  }
+  return resp;
+}
+
+async function driveDelete(fileId) {
+  const token = await getToken(false).catch(() => null);
+  if (!token) return;
+  fetch(`${DRIVE_API}/files/${fileId}`, {
+    method: 'DELETE',
+    headers: { Authorization: `Bearer ${token}` }
+  }).catch(() => {});
+}
+
+// Uploads a new file to appDataFolder using multipart upload.
+// Returns the new Drive file ID.
+async function driveUploadNew(name, blob) {
+  const token = await getToken(false);
+  const metadata = JSON.stringify({ name, parents: ['appDataFolder'] });
+  const form = new FormData();
+  form.append('metadata', new Blob([metadata], { type: 'application/json' }));
+  form.append('file', blob);
+  const resp = await fetch(`${DRIVE_UPLOAD_API}/files?uploadType=multipart&fields=id`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}` },
+    body: form
+  });
+  if (!resp.ok) throw new Error(`Drive upload failed (${resp.status})`);
+  const file = await resp.json();
+  return file.id;
+}
+
+// Replaces the content of an existing Drive file.
+async function driveUpdateContent(fileId, blob) {
+  const token = await getToken(false);
+  const resp = await fetch(`${DRIVE_UPLOAD_API}/files/${fileId}?uploadType=media`, {
+    method: 'PATCH',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': blob.type || 'application/octet-stream'
+    },
+    body: blob
+  });
+  if (!resp.ok) throw new Error(`Drive update failed (${resp.status})`);
+}
+
+// ============================================================
+// ENTRIES.JSON ON DRIVE
+// ============================================================
+
+async function findEntriesFile() {
+  const q = encodeURIComponent("name='entries.json' and trashed=false");
+  const resp = await driveGet(`/files?spaces=appDataFolder&q=${q}&fields=files(id)`);
+  if (!resp.ok) return null;
+  const data = await resp.json();
+  return (data.files && data.files.length > 0) ? data.files[0].id : null;
+}
+
+async function loadEntriesFromDrive() {
+  entriesFileId = await findEntriesFile();
+  if (!entriesFileId) { entries = []; return; }
+  const resp = await driveGet(`/files/${entriesFileId}?alt=media`);
+  if (!resp.ok) throw new Error('Failed to read entries.json from Drive');
+  entries = await resp.json();
+}
+
+async function saveEntriesToDrive() {
+  // Strip runtime-only fields before serialising
+  const serialisable = entries.map(e => ({
+    ...e,
+    files: (e.files || []).map(({ objectUrl, data, ...rest }) => rest)
+  }));
+  const blob = new Blob([JSON.stringify(serialisable)], { type: 'application/json' });
+  if (entriesFileId) {
+    await driveUpdateContent(entriesFileId, blob);
+  } else {
+    entriesFileId = await driveUploadNew('entries.json', blob);
+  }
+}
+
+// ============================================================
+// MEDIA FILES ON DRIVE
+// ============================================================
+
+// Upload any files in the array that are new (have .data but no .driveFileId).
+// Mutates each file object in-place: sets driveFileId + objectUrl, removes data.
+async function uploadMediaFiles(entryId, files) {
+  for (let i = 0; i < files.length; i++) {
+    const f = files[i];
+    if (f.driveFileId || !f.data) continue;
+    const ext = f.name.includes('.') ? f.name.slice(f.name.lastIndexOf('.')) : '';
+    const filename = `${entryId}_${i}${ext}`;
+    const blob = await (await fetch(f.data)).blob();
+    f.driveFileId = await driveUploadNew(filename, blob);
+    f.objectUrl = URL.createObjectURL(blob);
+    mediaCache[f.driveFileId] = f.objectUrl;
+    delete f.data;
+  }
+}
+
+// Fire-and-forget deletion of Drive files + revoke any blob URLs.
+async function deleteMediaFiles(files) {
+  if (!files?.length) return;
+  for (const f of files) {
+    if (f.objectUrl) URL.revokeObjectURL(f.objectUrl);
+    if (f.driveFileId) driveDelete(f.driveFileId);
+  }
+}
+
+// Fetches a file from Drive and returns a blob: URL. Results are cached.
+async function fetchDriveBlobUrl(fileId) {
+  if (mediaCache[fileId]) return mediaCache[fileId];
+  try {
+    const resp = await driveGet(`/files/${fileId}?alt=media`);
+    if (!resp.ok) return '';
+    const blob = await resp.blob();
+    const url = URL.createObjectURL(blob);
+    mediaCache[fileId] = url;
+    return url;
+  } catch { return ''; }
+}
+
+// After a render, find all elements with data-drive-id and lazily load their src.
+function lazyLoadDriveMedia() {
+  document.querySelectorAll('[data-drive-id]').forEach(async el => {
+    // Skip if already has a real src
+    if (el.src && el.src !== window.location.href && !el.src.endsWith('/')) return;
+    const fileId = el.dataset.driveId;
+    if (!fileId) return;
+    const url = await fetchDriveBlobUrl(fileId);
+    if (!url) return;
+    el.src = url;
+    // Propagate to the in-memory file object so subsequent renders are instant
+    for (const e of entries) {
+      for (const f of (e.files || [])) {
+        if (f.driveFileId === fileId) f.objectUrl = url;
+      }
+    }
+  });
+}
+
+// ============================================================
+// DRIVE INIT
+// ============================================================
+
+async function initDrive() {
+  showEntriesLoading();
+  try {
+    await loadEntriesFromDrive();
+    renderEntries();
+  } catch (err) {
+    console.error('Drive load error:', err);
+    showToast("Couldn't connect to Google Drive. Please try again.");
+    showAuthBanner(true);
+  }
+}
+
+function showEntriesLoading() {
+  document.getElementById('entries-list').innerHTML =
+    '<div class="empty-state"><div class="empty-icon">☁️</div><h3>Loading your diary…</h3><p>Connecting to Google Drive.</p></div>';
+}
+
+// ============================================================
+// MEDIA SRC HELPERS
+// ============================================================
+
+function fileSrc(f) {
+  return f.objectUrl || f.data || '';
+}
+
+// Returns an <img> tag that lazy-loads from Drive if no local src is available.
+function driveImg(f, extraAttrs = '') {
+  const src = fileSrc(f);
+  if (src) return `<img src="${src}" alt="${escHtml(f.name)}" ${extraAttrs}/>`;
+  if (f.driveFileId) return `<img src="" data-drive-id="${f.driveFileId}" alt="${escHtml(f.name)}" ${extraAttrs}/>`;
+  return `<img src="" alt="${escHtml(f.name)}" ${extraAttrs}/>`;
+}
+
+// Returns a <video> tag that lazy-loads from Drive if no local src is available.
+function driveVideo(f, extraAttrs = '') {
+  const src = fileSrc(f);
+  if (src) return `<video src="${src}" ${extraAttrs}></video>`;
+  if (f.driveFileId) return `<video src="" data-drive-id="${f.driveFileId}" ${extraAttrs}></video>`;
+  return `<video src="" ${extraAttrs}></video>`;
+}
+
+function escHtml(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ============================================================
+// PAGE NAVIGATION
+// ============================================================
+
+function setView(view, btn) {
+  currentView = view;
+  document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('entries-list').classList.toggle('card-view', view === 'card');
+}
+
+async function init() {
+  const now = new Date();
+  document.getElementById('today-date').textContent = now.toLocaleDateString('en-US', {weekday:'long', year:'numeric', month:'long', day:'numeric'});
+  document.getElementById('entry-date').value = now.toISOString().split('T')[0];
+  updateEntryCardHeader();
+  document.getElementById('entries-list').classList.add('card-view');
+  showEntriesLoading();
+
+  await waitForGIS();
+  initGoogleAuth();
+}
+
+function showPage(name, tabEl) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  tabEl.classList.add('active');
+  if (name === 'entries') renderEntries();
+  if (name === 'media') renderMediaGallery();
+  if (name === 'message') initMessageObserver();
+}
+
+let _msgObserver = null;
+function initMessageObserver() {
+  if (_msgObserver) _msgObserver.disconnect();
+  document.querySelectorAll('.message-para').forEach(el => el.classList.remove('visible'));
+  _msgObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      entry.target.classList.toggle('visible', entry.isIntersecting);
+    });
+  }, { threshold: 0.2 });
+  document.querySelectorAll('.message-para').forEach(el => _msgObserver.observe(el));
+}
+
+// ============================================================
+// RENDER — MEDIA GALLERY
+// ============================================================
+
+function renderMediaGallery() {
+  const container = document.getElementById('media-gallery-grid');
+  const allMedia = [];
+  [...entries].sort((a, b) => new Date(b.date) - new Date(a.date)).forEach(e => {
+    (e.files || []).forEach(f => {
+      if (f.type.startsWith('image/') || f.type.startsWith('video/')) {
+        allMedia.push({ file: f, entryId: e.id, entryTitle: e.title, entryDate: e.date });
+      }
+    });
+  });
+
+  if (!allMedia.length) {
+    container.innerHTML = `<div class="gallery-empty"><div class="empty-icon">📷</div><h3>No media yet</h3><p>Upload photos or videos when writing an entry.</p></div>`;
+    return;
+  }
+
+  _lbFiles = allMedia.map(m => m.file);
+
+  const yearGroups = {};
+  allMedia.forEach((item, idx) => {
+    const d = new Date(item.entryDate + 'T12:00:00');
+    const year = d.getFullYear();
+    const month = d.getMonth();
+    if (!yearGroups[year]) yearGroups[year] = {};
+    if (!yearGroups[year][month]) yearGroups[year][month] = [];
+    yearGroups[year][month].push({ ...item, idx });
+  });
+
+  container.innerHTML = '';
+  Object.keys(yearGroups).sort((a, b) => b - a).forEach(year => {
+    const yDiv = document.createElement('div');
+    yDiv.className = 'year-group';
+    yDiv.innerHTML = `<div class="year-label">${year}</div>`;
+
+    Object.keys(yearGroups[year]).sort((a, b) => b - a).forEach(month => {
+      const mDiv = document.createElement('div');
+      mDiv.className = 'month-group';
+      mDiv.innerHTML = `<div class="month-label">${months[month]}</div>`;
+
+      const grid = document.createElement('div');
+      grid.className = 'media-gallery-grid';
+
+      yearGroups[year][month].forEach(({ file: f, entryId, entryTitle, entryDate, idx }) => {
+        const d = new Date(entryDate + 'T12:00:00');
+        const dateStr = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        const div = document.createElement('div');
+        div.className = 'gallery-item';
+        const mediaEl = f.type.startsWith('image/')
+          ? driveImg(f, 'loading="lazy"')
+          : `${driveVideo(f, 'muted')}<div class="gallery-video-badge">▶ Video</div>`;
+        div.innerHTML = `
+          ${mediaEl}
+          <div class="gallery-overlay">
+            <button class="gallery-entry-link" onclick="openEntryFromGallery(${entryId}, event)">${escHtml(entryTitle)}</button>
+            <div class="gallery-entry-date">${dateStr}</div>
+          </div>
+        `;
+        div.addEventListener('click', () => openLightbox(idx));
+        grid.appendChild(div);
+      });
+
+      mDiv.appendChild(grid);
+      yDiv.appendChild(mDiv);
+    });
+
+    container.appendChild(yDiv);
+  });
+
+  lazyLoadDriveMedia();
+}
+
+function openEntryFromGallery(id, event) {
+  event.stopPropagation();
+  showPage('entries', document.getElementById('tab-entries'));
+  setTimeout(() => openEntry(id), 50);
+}
+
+// ============================================================
+// RENDER — ENTRY LIST
+// ============================================================
+
+function renderEntries() {
+  const list = document.getElementById('entries-list');
+  let filtered = currentFilter === 'all' ? entries : entries.filter(e => e.mood === currentFilter);
+  updateStats();
+
+  if (!filtered.length) {
+    list.innerHTML = `<div class="empty-state"><div class="empty-icon">📖</div><h3>No entries yet</h3><p>${currentFilter !== 'all' ? 'No entries for this mood.' : 'Start writing your first diary entry!'}</p><button class="btn btn-primary" onclick="showPage('new', document.getElementById('tab-new'))">Write First Entry</button></div>`;
+    return;
+  }
+
+  const grouped = {};
+  filtered.forEach(e => {
+    const d = new Date(e.date + 'T12:00:00');
+    const year = d.getFullYear();
+    const month = d.getMonth();
+    const key = `${year}-${String(month).padStart(2,'0')}`;
+    if (!grouped[key]) grouped[key] = { year, month, entries: [] };
+    grouped[key].entries.push(e);
+  });
+
+  const sortedKeys = Object.keys(grouped).sort((a,b) => b.localeCompare(a));
+  const yearGroups = {};
+  sortedKeys.forEach(k => {
+    const g = grouped[k];
+    if (!yearGroups[g.year]) yearGroups[g.year] = [];
+    yearGroups[g.year].push(g);
+  });
+
+  list.innerHTML = '';
+  Object.keys(yearGroups).sort((a,b) => b-a).forEach(year => {
+    const yDiv = document.createElement('div');
+    yDiv.className = 'year-group';
+    yDiv.innerHTML = `<div class="year-label">${year}</div>`;
+
+    yearGroups[year].forEach(mGroup => {
+      const mDiv = document.createElement('div');
+      mDiv.className = 'month-group';
+      mDiv.innerHTML = `<div class="month-label">${months[mGroup.month]}</div>`;
+
+      mGroup.entries.forEach(e => {
+        const d = new Date(e.date + 'T12:00:00');
+        const dateStr = d.toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric' });
+        const preview = e.text.length > 140 ? e.text.slice(0, 140) + '…' : e.text;
+        const mediaFiles = (e.files || []).filter(f => f.type.startsWith('image/') || f.type.startsWith('video/'));
+
+        const mediaHtml = e.files && e.files.length ? `<div class="entry-media-row">${e.files.map(f => {
+          const lbIdx = mediaFiles.indexOf(f);
+          const clickHandler = lbIdx !== -1 ? `onclick="openCardLightbox(${e.id}, ${lbIdx})"` : '';
+          if (f.type.startsWith('image/')) {
+            return `<div class="entry-media-thumb" ${clickHandler}>${driveImg(f)}</div>`;
+          } else if (f.type.startsWith('video/')) {
+            return `<div class="entry-media-thumb entry-media-thumb-video" ${clickHandler}>${driveVideo(f, 'muted')}<span class="entry-thumb-play">▶</span></div>`;
+          }
+          return `<span class="entry-media-chip">📄 ${escHtml(f.name.length > 14 ? f.name.slice(0,14)+'…' : f.name)}</span>`;
+        }).join('')}</div>` : '';
+
+        const div = document.createElement('div');
+        div.className = 'entry-item';
+        div.innerHTML = `
+          <div class="entry-item-header">
+            <div class="entry-item-meta">
+              <div class="entry-item-title">${escHtml(e.title)}</div>
+              <div class="entry-item-date">📅 ${dateStr}</div>
+            </div>
+            <div class="entry-item-mood">${escHtml(e.mood)}</div>
+          </div>
+          <div class="entry-item-body">
+            <div class="entry-item-text">${escHtml(preview)}</div>
+            ${mediaHtml}
+          </div>
+          <div class="entry-item-footer">
+            <button class="btn-sm" onclick="openEntry(${e.id})">Read more</button>
+            <button class="btn-sm" onclick="editEntry(${e.id})">Edit</button>
+            <button class="btn-sm danger" onclick="deleteEntry(${e.id})">Delete</button>
+          </div>
+        `;
+        mDiv.appendChild(div);
+      });
+
+      yDiv.appendChild(mDiv);
+    });
+
+    list.appendChild(yDiv);
+  });
+
+  lazyLoadDriveMedia();
+}
+
+function animateStat(id, value) {
+  const el = document.getElementById(id);
+  if (el.textContent == value) return;
+  el.classList.remove('animating');
+  void el.offsetWidth;
+  el.textContent = value;
+  el.classList.add('animating');
+}
+
+function updateStats() {
+  const total = entries.length;
+  const mediaCount = entries.reduce((sum, e) => sum + (e.files ? e.files.length : 0), 0);
+  animateStat('stat-total', total);
+  animateStat('stat-media', mediaCount);
+  if (total === 0) { animateStat('stat-streak', 0); return; }
+  const sorted = [...entries].sort((a,b) => new Date(b.date) - new Date(a.date));
+  let streak = 1, today = new Date(), prev = new Date(sorted[0].date + 'T12:00:00');
+  const diffDays = (a, b) => Math.round((a - b) / 86400000);
+  if (diffDays(today, prev) > 1) { animateStat('stat-streak', 0); return; }
+  for (let i = 1; i < sorted.length; i++) {
+    const curr = new Date(sorted[i].date + 'T12:00:00');
+    if (diffDays(prev, curr) === 1) { streak++; prev = curr; } else break;
+  }
+  animateStat('stat-streak', streak);
+}
+
+function scrollFilters(dir) {
+  document.getElementById('filter-scroll').scrollBy({ left: dir * 150, behavior: 'smooth' });
+}
+
+function updateFilterNav() {
+  const el = document.getElementById('filter-scroll');
+  document.getElementById('filter-prev').disabled = el.scrollLeft <= 0;
+  document.getElementById('filter-next').disabled = el.scrollLeft + el.clientWidth >= el.scrollWidth - 1;
+}
+
+function filterEntries(mood, btn) {
+  currentFilter = mood;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderEntries();
+}
+
+// ============================================================
+// MOOD / FILE SELECTION
+// ============================================================
+
+function selectMood(btn, mood) {
+  document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  selectedMood = mood;
+}
+
+function handleFiles(input) {
+  Array.from(input.files).forEach(file => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      currentFiles.push({ name: file.name, type: file.type, data: e.target.result });
+      renderFilePreviews();
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+function renderFilePreviews() {
+  const container = document.getElementById('media-preview');
+  container.innerHTML = '';
+  currentFiles.forEach((f, i) => {
+    const wrap = document.createElement('div');
+    wrap.className = 'media-thumb-wrap';
+
+    const thumb = document.createElement('div');
+    thumb.className = 'media-thumb';
+
+    if (f.type.startsWith('image/')) {
+      const src = fileSrc(f);
+      if (src) {
+        thumb.innerHTML = `<img src="${src}" alt="${escHtml(f.name)}" />`;
+      } else if (f.driveFileId) {
+        // Already uploaded — lazy-load from Drive
+        thumb.innerHTML = `<img src="" data-drive-id="${f.driveFileId}" alt="${escHtml(f.name)}" />`;
+        fetchDriveBlobUrl(f.driveFileId).then(url => {
+          if (url) { f.objectUrl = url; const img = thumb.querySelector('img'); if (img) img.src = url; }
+        });
+      } else {
+        thumb.innerHTML = `<div class="file-label">🖼️</div>`;
+      }
+    } else {
+      const icon = f.type.startsWith('video/') ? '🎬' : '📄';
+      thumb.innerHTML = `<div class="file-label">${icon}</div>`;
+    }
+
+    thumb.innerHTML += `<button class="thumb-remove" onclick="removeFile(${i})">✕</button>`;
+
+    const nameEl = document.createElement('div');
+    nameEl.className = 'thumb-name';
+    nameEl.id = `thumb-name-${i}`;
+    nameEl.textContent = f.name.length > 16 ? f.name.slice(0, 14) + '…' : f.name;
+    nameEl.title = 'Click to rename';
+    nameEl.onclick = () => startRename(i);
+
+    wrap.appendChild(thumb);
+    wrap.appendChild(nameEl);
+    container.appendChild(wrap);
+  });
+}
+
+function startRename(i) {
+  const nameEl = document.getElementById(`thumb-name-${i}`);
+  if (!nameEl) return;
+  const input = document.createElement('input');
+  input.className = 'thumb-name-input';
+  input.value = currentFiles[i].name;
+  input.maxLength = 80;
+  nameEl.replaceWith(input);
+  input.focus();
+  input.select();
+  const commit = () => {
+    const newName = input.value.trim() || currentFiles[i].name;
+    currentFiles[i].name = newName;
+    const div = document.createElement('div');
+    div.className = 'thumb-name';
+    div.id = `thumb-name-${i}`;
+    div.textContent = newName.length > 16 ? newName.slice(0, 14) + '…' : newName;
+    div.title = 'Click to rename';
+    div.onclick = () => startRename(i);
+    input.replaceWith(div);
+  };
+  input.addEventListener('blur', commit);
+  input.addEventListener('keydown', e => { if (e.key === 'Enter') input.blur(); if (e.key === 'Escape') { input.value = currentFiles[i].name; input.blur(); } });
+}
+
+function removeFile(i) {
+  currentFiles.splice(i, 1);
+  renderFilePreviews();
+}
+
+// ============================================================
+// SAVE / EDIT / DELETE
+// ============================================================
+
+async function saveEntry() {
+  const title = document.getElementById('entry-title').value.trim();
+  const date = document.getElementById('entry-date').value;
+  const text = document.getElementById('entry-text').value.trim();
+
+  if (!title) { showToast('Please add a title ✏️'); return; }
+  if (!text && currentFiles.length === 0) { showToast('Add some writing or upload a photo/video 💭'); return; }
+
+  // Make sure we're signed in before trying to save
+  let token;
+  try {
+    token = await getToken(false);
+  } catch {
+    try { token = await getToken(true); } catch {
+      showToast('Please sign in with Google to save your diary 🔑');
+      showAuthBanner(true);
+      return;
+    }
+  }
+
+  const saveBtn = document.getElementById('entry-save-btn');
+  const originalLabel = saveBtn.textContent;
+  saveBtn.disabled = true;
+  saveBtn.textContent = '⏳ Saving…';
+
+  try {
+    if (editingEntryId) {
+      const idx = entries.findIndex(e => e.id === editingEntryId);
+      if (idx !== -1) {
+        const files = currentFiles.map(f => ({ name: f.name, type: f.type, driveFileId: f.driveFileId, objectUrl: f.objectUrl, data: f.data }));
+        await uploadMediaFiles(editingEntryId, files);
+        entries[idx] = { ...entries[idx], title, date, text, mood: selectedMood || '—', files };
+      }
+      await saveEntriesToDrive();
+      clearForm();
+      showToast('Entry updated ✨');
+    } else {
+      const id = Date.now();
+      const files = currentFiles.map(f => ({ name: f.name, type: f.type, driveFileId: f.driveFileId, objectUrl: f.objectUrl, data: f.data }));
+      await uploadMediaFiles(id, files);
+      entries.unshift({ id, title, date, text, mood: selectedMood || '—', files });
+      await saveEntriesToDrive();
+      clearForm();
+      showToast('Entry saved beautifully ✨');
+    }
+    showPage('entries', document.getElementById('tab-entries'));
+  } catch (err) {
+    console.error('Save error:', err);
+    showToast("Couldn't save to Google Drive. Please try again.");
+  } finally {
+    saveBtn.disabled = false;
+    saveBtn.textContent = originalLabel;
+  }
+}
+
+function editEntry(id) {
+  const e = entries.find(x => x.id === id);
+  if (!e) return;
+  closeModalDirect();
+  editingEntryId = id;
+  document.getElementById('entry-title').value = e.title;
+  document.getElementById('entry-date').value = e.date;
+  document.getElementById('entry-text').value = e.text;
+  selectedMood = e.mood;
+  document.querySelectorAll('.mood-btn').forEach(b => {
+    b.classList.toggle('selected', b.textContent.trim() === e.mood);
+  });
+  currentFiles = (e.files || []).map(f => ({ ...f }));
+  renderFilePreviews();
+  document.querySelector('.entry-card-header h2').textContent = 'Edit Entry';
+  document.getElementById('entry-save-btn').textContent = '💾 Save Changes';
+  showPage('new', document.getElementById('tab-new'));
+}
+
+function updateEntryCardHeader() {
+  if (editingEntryId) return;
+  const dateVal = document.getElementById('entry-date').value;
+  const h2 = document.querySelector('.entry-card-header h2');
+  const badge = document.getElementById('today-date');
+  if (!dateVal) { h2.textContent = "Today's Entry"; return; }
+  const selected = new Date(dateVal + 'T12:00:00');
+  const todayStr = new Date().toISOString().split('T')[0];
+  h2.textContent = dateVal === todayStr ? "Today's Entry" : "Past Entry";
+  badge.textContent = selected.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+}
+
+function clearForm() {
+  editingEntryId = null;
+  document.getElementById('entry-title').value = '';
+  document.getElementById('entry-date').value = new Date().toISOString().split('T')[0];
+  document.getElementById('entry-text').value = '';
+  document.getElementById('media-preview').innerHTML = '';
+  document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('selected'));
+  currentFiles = [];
+  selectedMood = '';
+  document.querySelector('.entry-card-header h2').textContent = "Today's Entry";
+  document.getElementById('entry-save-btn').textContent = '💾 Save Entry';
+  updateEntryCardHeader();
+}
+
+async function deleteEntry(id) {
+  if (!confirm('Delete this entry?')) return;
+  const entry = entries.find(e => e.id === id);
+  if (entry) await deleteMediaFiles(entry.files);
+  entries = entries.filter(e => e.id !== id);
+  try {
+    await saveEntriesToDrive();
+  } catch {
+    showToast("Couldn't update Drive. Entry removed locally.");
+  }
+  renderEntries();
+  showToast('Entry deleted 🗑️');
+}
+
+// ============================================================
+// MODAL
+// ============================================================
+
+function openEntry(id) {
+  const e = entries.find(x => x.id === id);
+  if (!e) return;
+  const d = new Date(e.date + 'T12:00:00');
+  document.getElementById('modal-title').textContent = e.title;
+  document.getElementById('modal-date').textContent = d.toLocaleDateString('en-US', {weekday:'long', year:'numeric', month:'long', day:'numeric'});
+  document.getElementById('modal-mood').textContent = e.mood;
+  document.getElementById('modal-text').textContent = e.text;
+  const mediaGrid = document.getElementById('modal-media-grid');
+  const mediaSection = document.getElementById('modal-media-section');
+
+  _lbFiles = (e.files || []).filter(f => f.type.startsWith('image/') || f.type.startsWith('video/'));
+
+  if (e.files && e.files.length) {
+    mediaSection.style.display = '';
+    mediaGrid.innerHTML = e.files.map((f) => {
+      const lbIdx = _lbFiles.indexOf(f);
+      const clickable = lbIdx !== -1 ? `onclick="openLightbox(${lbIdx})"` : '';
+      if (f.type.startsWith('image/')) {
+        return `<div class="modal-media-item" ${clickable}>${driveImg(f)}</div>`;
+      } else if (f.type.startsWith('video/')) {
+        return `<div class="modal-media-item" ${clickable}>${driveVideo(f, 'muted')}<div class="play-badge">▶</div></div>`;
+      }
+      return `<div class="modal-media-item"><div class="file-name">📄<br/>${escHtml(f.name)}</div></div>`;
+    }).join('');
+    lazyLoadDriveMedia();
+  } else {
+    mediaSection.style.display = 'none';
+  }
+
+  document.getElementById('modal-edit-btn').onclick = () => editEntry(id);
+  document.getElementById('entry-modal').classList.add('open');
+  document.addEventListener('keydown', _modalEscHandler);
+}
+
+function openCardLightbox(entryId, index) {
+  const e = entries.find(x => x.id === entryId);
+  if (!e) return;
+  _lbFiles = (e.files || []).filter(f => f.type.startsWith('image/') || f.type.startsWith('video/'));
+  openLightbox(index);
+}
+
+// ============================================================
+// LIGHTBOX
+// ============================================================
+
+let _lbFiles = [];
+let _lbIndex = 0;
+
+async function openLightbox(index) {
+  _lbIndex = index;
+  document.getElementById('lightbox').classList.add('open');
+  document.addEventListener('keydown', _lbKeyHandler);
+
+  const f = _lbFiles[_lbIndex];
+  if (f.driveFileId && !f.objectUrl) {
+    // Show a loading placeholder while we fetch from Drive
+    _renderLightboxLoading();
+    f.objectUrl = await fetchDriveBlobUrl(f.driveFileId);
+    mediaCache[f.driveFileId] = f.objectUrl;
+  }
+  _renderLightbox();
+}
+
+function _renderLightboxLoading() {
+  document.getElementById('lb-content').innerHTML = '<div class="lightbox-loading">Loading…</div>';
+  document.getElementById('lb-caption').textContent = '';
+  document.getElementById('lb-prev').classList.add('hidden');
+  document.getElementById('lb-next').classList.add('hidden');
+}
+
+function _renderLightbox() {
+  const f = _lbFiles[_lbIndex];
+  const src = fileSrc(f);
+  const content = document.getElementById('lb-content');
+
+  if (f.type.startsWith('image/')) {
+    content.innerHTML = `<img class="lightbox-media" src="${src}" alt="${escHtml(f.name)}"/>`;
+  } else {
+    content.innerHTML = `<div class="lightbox-media"><video src="${src}" controls autoplay style="max-width:92vw;max-height:85vh;border-radius:8px;outline:none;"></video></div>`;
+  }
+
+  document.getElementById('lb-caption').textContent = `${f.name}  (${_lbIndex + 1} / ${_lbFiles.length})`;
+  document.getElementById('lb-prev').classList.toggle('hidden', _lbIndex === 0);
+  document.getElementById('lb-next').classList.toggle('hidden', _lbIndex === _lbFiles.length - 1);
+}
+
+async function shiftLightbox(dir) {
+  const next = _lbIndex + dir;
+  if (next < 0 || next >= _lbFiles.length) return;
+  const v = document.querySelector('#lb-content video');
+  if (v) v.pause();
+  _lbIndex = next;
+
+  const f = _lbFiles[_lbIndex];
+  if (f.driveFileId && !f.objectUrl) {
+    _renderLightboxLoading();
+    f.objectUrl = await fetchDriveBlobUrl(f.driveFileId);
+    mediaCache[f.driveFileId] = f.objectUrl;
+  }
+  _renderLightbox();
+}
+
+function closeLightbox() {
+  const v = document.querySelector('#lb-content video');
+  if (v) v.pause();
+  document.getElementById('lightbox').classList.remove('open');
+  document.removeEventListener('keydown', _lbKeyHandler);
+}
+
+function closeLightboxOnBackdrop(e) {
+  if (e.target === document.getElementById('lightbox')) closeLightbox();
+}
+
+function _lbKeyHandler(e) {
+  if (e.key === 'Escape') closeLightbox();
+  else if (e.key === 'ArrowLeft') shiftLightbox(-1);
+  else if (e.key === 'ArrowRight') shiftLightbox(1);
+}
+
+function _modalEscHandler(e) { if (e.key === 'Escape') closeModalDirect(); }
+function closeModal(e) { if (e.target === document.getElementById('entry-modal')) closeModalDirect(); }
+function closeModalDirect() {
+  document.getElementById('entry-modal').classList.remove('open');
+  document.removeEventListener('keydown', _modalEscHandler);
+}
+
+// ============================================================
+// TOAST
+// ============================================================
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+// ============================================================
+// BOOT
+// ============================================================
+
+init();
+</script>
+</body>
+</html>
