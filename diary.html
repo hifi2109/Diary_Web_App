@@ -2067,7 +2067,7 @@ async function loadDriveBrowser(append = false) {
         headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
-      if (!resp.ok) throw new Error('Photos search failed');
+      if (!resp.ok) { const t = await resp.text(); throw new Error(`${resp.status}: ${t}`); }
       data = await resp.json();
       // Client-side filter by filename
       const items = (data.mediaItems || []).filter(m => m.filename.toLowerCase().includes(search.toLowerCase()));
@@ -2079,15 +2079,16 @@ async function loadDriveBrowser(append = false) {
       const resp = await fetch(`${PHOTOS_API}/mediaItems?${params}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      if (!resp.ok) throw new Error('Photos list failed');
+      if (!resp.ok) { const t = await resp.text(); throw new Error(`${resp.status}: ${t}`); }
       data = await resp.json();
       _photosBrowserNextPage = data.nextPageToken || null;
       _photosBrowserItems = append ? [..._photosBrowserItems, ...(data.mediaItems || [])] : (data.mediaItems || []);
     }
 
     renderDriveBrowser();
-  } catch {
-    body.innerHTML = '<div class="empty-state" style="padding:3rem 1rem;"><div class="empty-icon">⚠️</div><h3>Couldn\'t load Google Photos</h3><p>Check your connection and try again.</p></div>';
+  } catch (err) {
+    console.error('Google Photos error:', err);
+    body.innerHTML = `<div class="empty-state" style="padding:3rem 1rem;"><div class="empty-icon">⚠️</div><h3>Couldn't load Google Photos</h3><p style="font-size:0.78rem;color:var(--text-muted);margin-top:0.5rem;">${escHtml(String(err))}</p></div>`;
   }
 }
 
